@@ -3,12 +3,11 @@ import heapq
 
 
 class Solution(object):
-    def __init__(self,width,height):
-        self.w= width
-        self.h= height
+    def __init__(self,width):
+        self.w = width
 
-        if self.w==32:
-            board32_string =[
+        if self.w == 32:
+            board32_string = [
             '. . . . . . . . B . . . L L L . . . . . . . . . . . . . . . . .',
             '. . . . . . . . B . . . L L L . . . . . . . . . . . . . . . . .',
             '. . . . . . . . B . . . L L L . . . L L L . . . . . . . . . . .',
@@ -47,9 +46,9 @@ class Solution(object):
 
     def print_curr_board(self,curr):
         '''
-        Prints the baord with position corresponding to curr as 'K'
+        Prints the board with position corresponding to curr as 'K'
         Input
-        curr : location of current node as [row,column]
+        curr : location of current square as [row,column]
         Output 
         return : NONE
         '''
@@ -72,6 +71,12 @@ class Solution(object):
         Checks if next_move is valid for a Knight on the 32x32 chessboard
         For a move to be valid, Knight must move exactly 2 steps in one direction
         And exactly 1 step in the other direction
+
+        Returns a boolean value based on above criteria
+
+        Input 
+        next_move : Next move on board in [row,col]
+        curr      : Current position of Knight in [row,col]
         '''
         if self.is_valid_position(next_move): 
             dx = abs(next_move[0] - curr[0])
@@ -83,10 +88,14 @@ class Solution(object):
         '''
         Checks if the move is valid for 32x32 board
         Checks include
-        - move is a list of intergers 
+        - move is a list of integers 
         - length of move is 2
         - row value lies in [0,7]
         - column value lies in [0,7]
+        Returns a boolean value based on above criteria
+
+        Input
+        move : Move in [row,col]
         '''
 
         if (len(move)!=2 or
@@ -99,22 +108,27 @@ class Solution(object):
             move[1]<0):
             return False
 
-        if self.w==32:
-            if (self.board[move[0]][move[1]]=='B' or
-                self.board[move[0]][move[1]]=='R'): 
+        if self.w == 32:
+            if (self.board[move[0]][move[1]] == 'B' or
+                self.board[move[0]][move[1]] == 'R'): 
                 return False
         return True
-
-        
 
 
     def solution2and3(self,start, end):
         '''
         Solution to problem 2 and problem 3
-
         Shortest Path from Start to End is given by the standard BFS routine
-        start=Knight Position in [row,col]
-        end=Knight Position in [row,col]
+        
+        Output
+        Prints the shortest path from start square to end square 
+
+        Input 
+        start :  Staring Knight Position in [row,col]
+        end   :  Ending Knight Position in [row,col]
+
+        
+
         '''
         visited = [[[-1, -1]] * self.w for _ in xrange(self.w)]
         q = deque([])
@@ -126,7 +140,7 @@ class Solution(object):
             node_r, node_c = q.popleft() 
 
             # Check for all possible 8 knight positions 
-            moves=[(-1,-2),(1,2),(-1,2),(1,-2),(-2,-1),(2,1),(-2,1),(2,-1)]
+            moves =[(-1,-2),(1,2),(-1,2),(1,-2),(-2,-1),(2,1),(-2,1),(2,-1)]
 
             for i in xrange(8):
                 if (self.is_valid_position([node_r + moves[i][0],node_c + moves[i][1]]) and 
@@ -137,15 +151,15 @@ class Solution(object):
 
 
 
-        shortestpath = []
+        shortest_path = []
         curr = end
         while(curr != start):
-            shortestpath = [curr] + shortestpath
+            shortest_path = [curr] + shortest_path
             curr = visited[curr[0]][curr[1]]
         
         # Include the starting position
-        shortestpath = [start] + shortestpath  
-        print shortestpath
+        shortest_path = [start] + shortest_path  
+        print shortest_path
 
 
     def is_valid_32(self,next_move, curr):
@@ -154,12 +168,16 @@ class Solution(object):
         Checks if the next_move is a valid move for a Knight
         Given that the curr is the current position of the Knight
         Checks for R[ock] and B[arrier] constraints
+
+        Input
+        next_move : Next move on board in [row,col]
+        curr      : Current position of Knight in [row,col]
         '''
         if not self.is_valid_move(next_move, curr):
             # Check if the next_move is valid for a Knight 
             return False
 
-        # Accomdate for R[ock] and B[arrier] squares
+        # Accomodate for R[ock] and B[arrier] squares
 
         # Can't land on rock or blocked
         if (self.board[next_move[0]][next_move[1]] == 'R'
@@ -175,7 +193,7 @@ class Solution(object):
 
         # up-left or up-right
         if (next_move[0] - curr[0] == -2 and 
-           abs(next_move[1] - curr[1]))== 1:
+           abs(next_move[1] - curr[1])) == 1:
             return (self.board[curr[0] - 1][curr[1]] != 'B'and 
             self.board[curr[0] - 2][curr[1]] != 'B')
 
@@ -195,6 +213,9 @@ class Solution(object):
         '''
         Returns cost of making the move factoring in cost for W[ater] 
         and R[ock] for 32x32 board 
+
+        Input
+        next_move : Next move on board in [row,col]
         '''
         if self.board[next_move[0]][next_move[1]] == 'W':
             return 2
@@ -204,7 +225,7 @@ class Solution(object):
 
     def solution4(self,start, end):
         '''
-        Implemnting Dijkstra's algorithm with Greedy approach
+        Implementing Dijkstra's algorithm with Greedy approach
 
         Pseudocode
         seen=set()
@@ -220,6 +241,11 @@ class Solution(object):
                 for edge_cost,u in neighbours(v): # implemented with 32*32 board constraints
                     if u not in seen:
                         heapq.heappush(q,(edge_cost+path_cost,u,path+tuple([u])))
+
+        Input 
+        start :  Staring Knight Position in [row,col]
+        end   :  Ending Knight Position in [row,col]
+
 
         '''
 
@@ -237,19 +263,19 @@ class Solution(object):
                 if [node_r, node_c] == end: # Found the target node
                     return d_node, path
 
-                # Accomodoate for T[eleport] square
+                # Accomodate for T[eleport] square
                 if [node_r, node_c] == [11, 26] and not seen[23][27]:  
                     heapq.heappush(q, (d_node + 0, [
                         23, 27], path + tuple([[23, 27]]))) # Zero Cost
                     continue # Skip the iteration
 
-                # Accomodoate for other T[eleport] square
+                # Accomodate for other T[eleport] square
                 if [node_r, node_c] == [23, 27] and not seen[11][26]:   
                     heapq.heappush(q, (d_node + 0,
                         [11, 26], path + tuple([[11, 26]]))) # Zero Cost
                     continue
 
-                moves=[(-1,-2),(1,2),(-1,2),(1,-2),(-2,-1),(2,1),(-2,1),(2,-1)]
+                moves = [(-1,-2),(1,2),(-1,2),(1,-2),(-2,-1),(2,1),(-2,1),(2,-1)]
 
                 # Checking for all 8 Knight moves
                 # Nodes are added if the move is valid AND
@@ -291,13 +317,13 @@ def longestSequence(curr,path_len):
         #print curr,'here',path_len
         return False # used square
     
-    seq32[curr[0]][curr[1]]=path_len
-    path_len+=1
-    if path_len==63:
+    seq32[curr[0]][curr[1]]= path_len
+    path_len+= 1
+    if path_len == 63:
             return True
 
     
-    moves=[(-1,-2),(1,2),(-1,2),(1,-2),(-2,-1),(2,1),(-2,1),(2,-1)]
+    moves = [(-1,-2),(1,2),(-1,2),(1,-2),(-2,-1),(2,1),(-2,1),(2,-1)]
     
     for i in xrange(8):
         if (is_valid_move([curr[0] + moves[i][0],curr[1] + moves[i][1]],
@@ -310,7 +336,7 @@ def longestSequence(curr,path_len):
 #                    return True
     
     
-    seq32[curr[0]][curr[1]]=-1
+    seq32[curr[0]][curr[1]] = -1
     path_len-=1
     return False                  
                         
@@ -320,31 +346,25 @@ def longestSequence(curr,path_len):
     
 
 if __name__ == "__main__":
-    # Add syntex error for input ; stuff like 0'bd1' should not get rejected
-
-    #print shorteston32board(start, end)
-    # print longestSequence([0,0],1)
-    # print seq32
-
-    board8=Solution(8,8)
+    board8=Solution(8)
     
     print 'Level 1'
     
     start = input('Enter starting position in [row,col] - ')
     while not board8.is_valid_position(start):
-       start=input ('Enter a valid starting position in [row,col] - ')
+       start = input ('Enter a valid starting position in [row,col] - ')
 
     board8.print_curr_board(start)
-    curr=start
-    next_move=input ('Enter a move in [row,col] for Bishop. Enter "Q" to exit Level 1 - ')
+    curr = start
+    next_move = input ('Enter a move in [row,col] for Bishop. Enter "Q" to exit Level 1 - ')
 
     while next_move != 'Q':
         if board8.is_valid_move(next_move,curr):
-           curr=next_move
+           curr = next_move
            board8.print_curr_board(curr)
         else:
            print '!------This move is not valid------!'
-        next_move=input ('Enter a move in [row,col] for Bishop. Enter "Q" to exit Level 1 - ')
+        next_move = input ('Enter a move in [row,col] for Bishop. Enter "Q" to exit Level 1 - ')
 
     print '\n'
 
@@ -352,24 +372,24 @@ if __name__ == "__main__":
 
     start = input('Enter starting position in [row,col] - ')
     while not board8.is_valid_position(start):
-       start=input ('Enter a valid starting position in [row,col] - ')
+       start = input ('Enter a valid starting position in [row,col] - ')
 
     end = input('Enter ending position in [row,col] - ')
     while not board8.is_valid_position(end):
-       end=input ('Enter a valid ending position in [row,col] - ')
+       end = input ('Enter a valid ending position in [row,col] - ')
     
     board8.solution2and3(start,end)
 
     print 'Level 4'
 
-    board32=Solution(32,32)
+    board32 = Solution(32)
     start = input('Enter starting position in [row,col] - ')
     while not board32.is_valid_position(start):
-       start=input ('Enter a valid starting position in [row,col] - ')
+       start = input ('Enter a valid starting position in [row,col] - ')
 
     end = input('Enter ending position in [row,col] - ')
     while not board32.is_valid_position(end):
-       end=input ('Enter a valid ending position in [row,col] - ')
+       end = input ('Enter a valid ending position in [row,col] - ')
 
     print  board32.solution4(start,end)
 
